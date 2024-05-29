@@ -1,0 +1,40 @@
+ -  name: Creatingpartiion on Specifieddisk
+    parted:
+          device: '{{ device_name }}'
+          number: ' {{ part_num }}'
+          label: '{{ part_label }}'
+          part_type: '{{ partition_type }}'
+          part_start: '{{ partition_start }}'
+          part_end: '{{ partition_end }}'
+          flags: '{{ flag_name }}'
+          state: present
+ -  name: install lvm2 dependency
+    package:
+          name: lvm2
+          state: present
+ -  name: Creating Logical Volume
+    lvg:
+          vg: '{{ volume_group }}'
+          pvs: '{{ physical_volume }}'
+          state: present
+ -  name: LV creation
+    lvol:
+          vg: '{{ volume_group }}'
+          lv: '{{ logical_volume }}'
+          size: '{{ lv_size }}'
+ - name: configuring file system
+   filesystem:
+          dev: '{{ lv_path }}'
+          fstype: '{{ fs_type }}'
+ -  name: CreatingLocal Mountpoint
+    file:
+          path: '{{ mount_point }}'
+          state: directory
+          mode: '2775'
+ -  name: Mounting New Filesystem /data
+    mount:
+          path: '{{ mount_path }}'
+          src: '{{ lv_path }}'
+          opts: defaults
+          fstype: '{{ fs_type }}'
+          state: mounted

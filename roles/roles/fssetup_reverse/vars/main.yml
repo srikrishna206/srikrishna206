@@ -1,0 +1,4 @@
+device_path: /dev/sdb
+volume_group: webvg
+logical_volume: weblv
+mount_path: /webdata

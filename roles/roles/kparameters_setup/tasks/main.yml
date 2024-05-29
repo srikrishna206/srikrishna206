@@ -1,0 +1,8 @@
+- name: "Copy file"
+  copy:
+        src: "{{source}}"
+        dest: "{{dest}}"
+        owner: ansadmin
+        group: root
+        mode: 777
+  notify: restart the sysctl service

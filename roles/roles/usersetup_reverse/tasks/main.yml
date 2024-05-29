@@ -1,0 +1,9 @@
+-  name: Removing the {{user_name}} User
+   user:
+        name: '{{user_name}}'
+        remove: yes
+        state: absent
+-  name: Removing the {{group_name}} group
+   group:
+         name: '{{group_name}}'
+         state: absent

@@ -1,0 +1,2 @@
+source: /etc/ansible/roles/kparameters_setup/files/sysctl.conf
+dest: /etc/sysctl.conf

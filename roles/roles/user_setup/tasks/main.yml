@@ -1,0 +1,14 @@
+- name: user a group
+  group:
+     name: '{{ group_name }}'
+     gid: '{{ group_id }}'
+- name: creating user
+  user:
+     name: '{{ user_name }}'
+     uid: '{{ user_id }}'
+     group: '{{ group_name }}'
+     state: present
+- name: creating password
+  user:
+     name: '{{ user_name }}'
+     password: "{{'username@123' | password_hash('sha512') }}"

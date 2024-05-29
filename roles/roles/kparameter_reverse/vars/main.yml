@@ -1,0 +1,2 @@
+source_file: sysctl.conf
+destination_path: /etc/sysctl.conf

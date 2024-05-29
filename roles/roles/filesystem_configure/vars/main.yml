@@ -1,0 +1,8 @@
+vg_name: webvg
+logical_name: weblv
+lv_size: +100%FREE
+mount_point: /webdata
+mount_path: /webdata
+lv_path: /dev/webvg/weblv
+fs_type: xfs
+device_name: /dev/sdb
