@@ -1,0 +1,65 @@
+---
+- name: ansible_repo1 clone from srikrishna206
+  hosts: sriansible-client2
+  remote_user: ansadmin
+  become: true
+  vars:
+    git_username: "srikrishna206"
+    git_password: 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
+    remote_repo_path: "/opt/git/srihari"
+    commit_message: Added a new files to the remote repository
+    user_name: srikrishna206
+    user_email: parasasrihar@gmail.com
+    remote_repo_url: https://github.com/srikrishna206/srihari.git
+    
+  tasks:
+   - name: installing git
+     yum:
+       name: git
+       state: latest
+   - name: Ensure the directory is a Git repository
+     command: git init
+     args:
+       chdir: "{{ remote_repo_path }}"
+   - name: creating a username
+     command: git config user.name "{{ user_name }}"
+     args:
+       chdir: "{{ remote_repo_path}}"
+   - name: creating a usereamil
+     command: git config user.email "{{ user_email}}"
+     args:
+       chdir: "{{ remote_repo_path }}"
+   - name: creating a credential
+     command: git config credential.helper store
+     args:
+       chdir: "{{ remote_repo_path }}"
+   - name: Adding file to git
+     command: git add -A
+     args:
+       chdir: "{{ remote_repo_path }}"
+   - name: Commit changes for the files
+     command: git commit -m "{{ commit_message }}"
+     args:
+       chdir: "{{ remote_repo_path }}"
+   - name: Check if remote origin exists
+     command: git remote get-url origin
+     args:
+       chdir: "{{ remote_repo_path }}"
+     register: remote_origin
+     failed_when: false
+     changed_when: false
+   - name: Remove existing origin remote if it exists
+     command: git remote remove origin
+     args:
+       chdir: "{{ remote_repo_path }}"
+     ignore_errors: true
+   - name: setting remote repository url
+     command: git remote add origin "{{ remote_repo_url }}"
+     args:
+       chdir: "{{ remote_repo_path }}"
+     when: remote_origin.rc != 0
+   - name: pushing a file to remote repository
+     command: git push -u origin master
+     args:
+       chdir: "{{ remote_repo_path }}"
+

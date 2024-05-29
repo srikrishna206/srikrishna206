@@ -1,0 +1,30 @@
+---
+- name: File System Reduction
+  hosts: websrv
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: Unmounting the file system
+           mount: 
+                 path: /data
+                 state: unmounted
+        -  name: Reducing the logical volume along with file system
+           lvol: 
+                vg: datavg
+                lv: datalv
+                size: 50%VG
+                resizefs: yes
+                force: yes
+        -  name: mounting the file system
+           mount: 
+                 path: /data
+                 src: /dev/datavg/datalv
+                 fstype: ext4
+                 state: mounted
+        -  name: Reducing the pv from vg
+           shell: vgreduce datavg /dev/sdd1
+        -  name: Removing the partitions of /dev/sdd disk
+           parted:
+                  device: /dev/sdd
+                  number: 1
+                  state: absent

@@ -1,0 +1,97 @@
+---
+-  name: Autofs configuration
+   hosts: websrv
+   remote_user: ansadmin
+   become: true
+   vars:
+     -  fstab_entry:
+               - {line: 'saiansible-srv:/saiwebdata1    "/saiwebdata1"  nfs     defaults        0       0'}
+     -  automasters_entry:
+                        - {line: '/-    /etc/auto.direct        --timeout=60'}
+     -  automasters2_entry:
+                        - {line: '/sai-webdata    /etc/auto.indirect        --timeout=60'}
+     -  autodirect_entry:
+                        - {line: '/saiwebdata2     -rw,intr,sync   saiansible-srv:/saiwebdata2'}
+     -  autoindirect_entry:
+                        - {line: 'saiwebdata3      -rw,intr,sync   saiansible-srv:/saiwebdata3'}
+     -  nfs: "saiansible-srv:/saiwebdata1"
+     -  mountpoint: "/saiwebdata1"
+     -  permission: "0777"
+     -  myopts: "rw,sync"
+   tasks:
+     -  name: installation of nfs & autofs
+        yum:
+          name: nfs-utils, autofs
+          state: latest 
+     - name: starting nfs service 
+       service:
+         name: nfs
+         state: started
+         enabled: yes    
+     - name: starting autofs service
+       service: 
+        name: autofs
+        state: started
+        enabled: yes     
+     -  name: Creating Local Mountpoint
+        file:
+          path: "{{ mountpoint }}"
+          state: directory
+          mode: "{{ permission }}"
+     -  name: mounting "/saiwebdata1"
+        mount:
+          src: saiansible-srv:/saiwebdata1
+          path: /saiwebdata1
+          fstype: nfs
+          state: mounted
+     -  name: make entry in automaster file
+        lineinfile:
+          path: /etc/auto.master
+          line:  '{{item.line}}'
+          state: present
+        with_items:
+                 - '{{automasters_entry}}'
+     - name: Create /etc/auto.direct file
+       file:
+        path: /etc/auto.direct
+        state: touch
+     -  name: entry in the autodirect
+        lineinfile:
+          path: /etc/auto.direct
+          line:  '{{item.line}}'
+          state: present
+        with_items:
+                 - '{{autodirect_entry}}'
+     -  name: restart autofs service
+        service:
+          name: autofs
+          state: restarted
+     -  name: adding entry into automaster
+        lineinfile:
+          path: /etc/auto.master
+          line:  '{{item.line}}'
+          state: present 
+        with_items:
+                 - '{{automasters2_entry}}'
+     - name: Create /etc/auto.indirect file
+       file:
+        path: /etc/auto.indirect
+        state: touch
+     -  name: entry in the autoindirect
+        lineinfile:
+          path: /etc/auto.indirect
+          line:  '{{item.line}}'
+          state: present
+        with_items:
+                 - '{{autoindirect_entry}}'
+     -  name: restart autofs service
+        service:
+          name: autofs
+          state: restarted
+     -  name: adding entry into the fstab file
+        lineinfile:
+          path: /etc/fstab
+          line: '{{item.line}}'
+          state: present
+        with_items:
+                  - '{{fstab_entry}}'

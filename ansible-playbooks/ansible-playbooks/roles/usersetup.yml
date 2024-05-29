@@ -1,0 +1,8 @@
+---
+- name: oracle database user configuration
+  hosts: sriansible-client2
+  remote_user: ansadmin
+  become: true
+  roles:
+      - user_setup
+     

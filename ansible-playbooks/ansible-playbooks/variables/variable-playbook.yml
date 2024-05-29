@@ -1,0 +1,12 @@
+---
+ - name: example of varibles
+   hosts: sriansible-srv
+   gather_facts: no
+   become: true
+   vars:
+    username: admin
+   tasks:
+    - name: add the user {{ username }}
+      user:
+        name: '{{ username }}'
+        state: present 

@@ -1,0 +1,18 @@
+---
+ - name: example of varibles(inventory varible)
+   hosts: sriansible-client1
+   gather_facts: no
+   become: true
+   tasks:
+    - name: show varible values
+      debug:
+        msg: "port is {{ http_port }}, username is {{ user }}, path is {{ path }}"
+
+ - name: example of varibles
+   hosts: sriansible-client2
+   gather_facts: no
+   become: true
+   tasks:
+    - name: show varible values
+      debug:
+        msg: "port is {{ http_port }}, username is {{ user }}, path is {{ path }}"

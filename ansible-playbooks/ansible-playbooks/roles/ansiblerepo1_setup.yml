@@ -1,0 +1,7 @@
+---
+- name: ansible_repo1 clone from srikrishna206
+  hosts: sriansible-client2, sriansible-client1, sriansible-srv
+  remote_user: ansadmin
+  become: true
+  roles:
+      - ansiblerepo1_setup

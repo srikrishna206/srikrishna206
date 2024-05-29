@@ -1,0 +1,36 @@
+---
+- name: Bonding Configuration Reverse
+  hosts: websrv, appsrv
+  remote_user: ansadmin
+  become: true
+  vars:
+       - bond_parameters:
+                        - {attr: 'MASTER'}
+                        - {attr: 'SLAVE'}
+  tasks:
+        -  name: down the nic card ens37
+           shell: ifdown ens37
+        -  name: down the nic card ens38
+           shell: ifdown ens38
+        -  name: down the bond0
+           shell: ifdown bond0
+        -  name: Removing ens37 file
+           file:
+               path: /etc/sysconfig/network-scripts/ifcfg-ens37
+               state: absent
+        -  name: Removing ens38 file
+           file:
+               path: /etc/sysconfig/network-scripts/ifcfg-ens38
+               state: absent
+        -  name: Removing bond0 file
+           file:
+                path: /etc/sysconfig/network-scripts/ifcfg-bond0
+                state: absent
+        -  name: restarting the Network Manager
+           service:
+                   name: NetworkManager
+                   state: restarted
+        -  name: restarting the network service
+           service:
+                   name: network
+                   state: restarted

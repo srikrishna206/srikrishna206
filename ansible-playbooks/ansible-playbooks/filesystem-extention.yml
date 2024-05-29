@@ -1,0 +1,29 @@
+---
+-  name: Extension Filesystem Configuration
+   hosts: sriansible-srv
+   remote_user: ansadmin
+   become: true
+   tasks:
+        -  name: partition the newly added disk
+           parted:
+                  device: /dev/sdd
+                  label: gpt
+                  number: 1
+                  part_start: 0%
+                  part_end: 100%
+                  part_type: primary
+                  flags: [ lvm ]
+                  state: present
+        -  name: extending the volume group
+           lvg:
+               vg: datavg
+               pvs:
+                   - /dev/sdb1
+                   - /dev/sdd1
+        -  name: extending the logical volume
+           lvol:
+                vg: datavg
+                lv: datalv
+                size: +100%FREE
+                resizefs: yes
+

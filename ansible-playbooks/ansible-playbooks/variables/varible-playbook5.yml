@@ -1,0 +1,18 @@
+---
+ - name: example of varibles
+   hosts: localhost
+   gather_facts: no
+   vars:
+    http_port: 443
+    user: srikrishna
+    path: /opt/srikrishna
+   tasks:
+    - name: show varible values
+      vars:
+          admin_user: ramaveera
+          http_port: 90
+      debug:
+          msg: "port is {{ http_port }}, username is {{ admin_user }}, path is {{ path }}"
+    - name: show varible for admin
+      debug:
+         msg: "port is {{ http_port }}, username is {{ user }}, path is {{ path }}"     

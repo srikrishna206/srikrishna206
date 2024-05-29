@@ -1,0 +1,34 @@
+---
+- name: Bonding Configuration
+  hosts: websrv, appsrv
+  remote_user: ansadmin
+  become: true
+  vars:
+       - nmcli_bond:
+            - {conn_name: 'bond0', ip4: "192.168.0.169/24", gw4: "192.168.0.1", mode: 'active-backup'}
+
+       - nmcli_bond_slave:
+            - {conn_name: 'ens37', ifname: 'ens37', master: 'bond0'}
+            - {conn_name: 'ens38', ifname: 'ens38', master: 'bond0'}
+
+  tasks:
+        -  name: bonding active backup configuration
+           nmcli:
+                 type: bond
+                 conn_name: '{{item.conn_name}}'
+                 ip4: '{{item.ip4}}'
+                 gw4: '{{item.gw4}}'
+                 mode: '{{item.mode}}'
+                 state: present
+           with_items:
+                      - '{{nmcli_bond}}'
+        -  name: bond slave configuration
+           nmcli:
+                 type: bond-slave
+                 conn_name: '{{item.conn_name}}'
+                 ifname: '{{item.ifname}}'
+                 master: '{{item.master}}'
+                 state: present
+           with_items:
+                      - '{{nmcli_bond_slave}}'
+

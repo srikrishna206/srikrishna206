@@ -1,0 +1,81 @@
+---
+- name: sharing the file system using nfs
+  hosts: websrv
+  remote_user: ansadmin
+  become: true
+  vars: 
+       - logical_volumes: 
+                - {lv: 'weblv1', size: '5g'}
+                - {lv: 'weblv2', size: '5g'}
+                - {lv: 'weblv3', size: '+100%FREE'}
+       - devices:
+                - {dev: '/dev/webvg/weblv1'}
+                - {dev: '/dev/webvg/weblv2'}
+                - {dev: '/dev/webvg/weblv3'}
+       - mount_paths:
+                - {path: '/sri-webdata1-websrv', src: '/dev/webvg/weblv1'}
+                - {path: '/sri-webdata2-websrv', src: '/dev/webvg/weblv2'}
+                - {path: '/sri-webdata3-websrv', src: '/dev/webvg/weblv3'}
+       - export_entry:
+                - {line: '/sri-webdata1-websrv	*(sync,rw,no_root_squash)'}
+                - {line: '/sri-webdata2-websrv	*(sync,rw,no_root_squash)'}
+                - {line: '/sri-webdata3-websrv	*(sync,rw,no_root_squash)'}
+  tasks:
+        -  name: creating disk partition
+           parted:
+                  device: /dev/sdc
+                  label: gpt
+                  number: 1
+                  part_type: primary
+                  part_start: 0%
+                  part_end: 100%
+                  flags: [ lvm ]
+                  state: present
+        -  name: install lvm2 dependency
+           package:
+                   name: lvm2
+                   state: present
+        -  name: configuring volume groups
+           lvg:
+               vg: webvg
+               pvs: /dev/sdc1
+               state: present
+        -  name: configuring logical volumes
+           lvol:
+               vg: webvg
+               lv: '{{item.lv}}'
+               size: '{{item.size}}'
+               state: present
+           with_items:
+                      - '{{logical_volumes}}'
+        -  name: configuring file system
+           filesystem:
+                      fstype: xfs
+                      dev: '{{item.dev}}'
+           with_items:
+                      - '{{devices}}'
+        -  name: mounting the file system
+           mount:
+                 path: '{{item.path}}'
+                 src: '{{item.src}}'
+                 fstype: xfs
+                 state: mounted
+           with_items:
+                      - '{{mount_paths}}'
+        -  name: Installing nfs package
+           yum:
+               name: nfs-utils
+               state: present
+        -  name: starting nfs services
+           service:
+                   name: nfs
+                   state: started
+        -  name: configuring /etc/exports
+           lineinfile:
+                      path: /etc/exports
+                      line: '{{item.line}}'
+                      state: present
+           with_items:
+                      - '{{export_entry}}'
+        -  name: reload /etc/exports file
+           shell: exportfs -avr

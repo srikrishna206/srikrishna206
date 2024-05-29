@@ -1,0 +1,16 @@
+---
+- name: Repo Configuration Rhel7.4
+  hosts: websrv
+
+  
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: Removing rhel7.4 directory
+           file:
+                path: /var/ftp/pub/rhel7.4
+                state: absent
+        -  name: removing repo file
+           file:
+                path: /etc/yum.repos.d/rhel74.repo
+                state: absent

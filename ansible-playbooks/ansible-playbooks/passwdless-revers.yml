@@ -1,0 +1,31 @@
+---
+- name: Removing Password Less Authentication mani-ans-serv
+  hosts: websrv, appsrv
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: Removing id_rsa.pub from authorized keys
+           lineinfile:
+                      path: /home/ashok/.ssh/authorized_keys
+                      regexp: 'sriansible-srv'
+                      state: absent
+- name: Removing Password Less Authentication sriansible-srv
+  hosts: websrv
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: Removing id_rsa.pub from authorized keys
+           lineinfile:
+                      path: /home/ashok/.ssh/authorized_keys
+                      regexp: 'sriansible-srv'
+                      state: absent
+- name: Removing Password Less Authentication sriansible-client1
+  hosts: appsrv
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: Removing id_rsa.pub from authorized keys
+           lineinfile:
+                      path: /home/ashok/.ssh/authorized_keys
+                      regexp: 'sriansible-client1'
+                      state: absent

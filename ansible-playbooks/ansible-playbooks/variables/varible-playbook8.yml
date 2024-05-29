@@ -1,0 +1,13 @@
+---
+ - name: example of varibles(environmental varibles)
+   hosts: localhost
+   gather_facts: no
+   vars:
+    http_port: 443
+    user: srikrishna
+    path: /opt/srikrishna
+   tasks:
+    - name: show varible values
+      debug:
+       msg: "port is {{ lookup ('env', 'HTTP_PORT') }}, username is {{ lookup('env', 'USER_ADMIN') }}, path is {{ lookup ('env','APP_PATH') }}"
+       

@@ -1,0 +1,7 @@
+---
+- name: filesystem setup configuration
+  hosts: sriansible-client2
+  remote_user: ansadmin
+  become: true
+  roles:
+      - fssetup_reverse

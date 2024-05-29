@@ -1,0 +1,38 @@
+---
+- name: Repo Configuration Rhel7.4
+  hosts: websrv, 
+  remote_user: ansadmin
+  become: true
+  vars:
+       - repo_entries:
+                      - {line: '[rhel74.repo]'}
+                      - {line: 'name=rhel74.repo'}
+                      - {line: 'baseurl=file:///var/ftp/pub/rhel7.4'}
+                      - {line: 'gpgcheck=0'}
+                      - {line: 'enabled=1'}
+  tasks:
+        -  name: mounting /dev/sr0
+           shell: sudo mount /dev/sr0 /mnt
+        -  name: creating rhel7.4 directory
+           file:
+                path: /var/ftp/pub/rhel7.4
+                state: directory
+                mode: '0755'
+        -  name: copying the rhel7.4 packages
+           shell: cp /mnt/Packages/* /var/ftp/pub/rhel7.4
+        -  name: unmounting /dev/sr0
+           shell: sudo umount /mnt
+        -  name: creating repo file
+           file:
+                path: /etc/yum.repos.d/rhel74.repo
+                state: touch
+        -  name: repo file configuration
+           lineinfile:
+                      path: /etc/yum.repos.d/rhel74.repo
+                      line: '{{item.line}}'
+                      state: present
+           with_items:
+                      - '{{repo_entries}}'
+        -  name: createrepo configuration
+           shell: createrepo -v /var/ftp/pub/rhel7.4
+

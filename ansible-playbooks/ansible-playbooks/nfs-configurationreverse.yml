@@ -1,0 +1,56 @@
+---
+- name: unsharing the nfs file system
+  hosts: sriansible-client2
+  remote_user: ansadmin
+  become: true
+  vars:
+       - logical_volumes: 
+                - {lv: 'weblv1'}
+                - {lv: 'weblv2'}
+                - {lv: 'weblv3'}
+       - mount_points:
+                - {path: '/sri-webdata1-websrv'}
+                - {path: '/sri-webdata2-websrv'}
+                - {path: '/sri-webdata3-websrv'}
+  tasks:
+        -  name: removing entries in /etc/exports file
+           lineinfile:
+                      path: /etc/exports
+                      regexp: '/webdata'
+                      state: absent
+        -  name: reloading the /etc/exports file
+           shell: exportfs -avr
+        -  name: unmounting the file system
+           mount:
+                 path: '{{item.path}}'
+                 state: absent
+           with_items:
+                      - '{{mount_points}}'
+        -  name: removing the logical volume1
+           lvol:
+                vg: webvg
+                lv: weblv1
+                state: absent
+                force: yes
+        -  name: removing the logical volume2
+           lvol:
+                vg: webvg
+                lv: weblv2
+                state: absent
+                force: yes
+        -  name: removing the logical volume3
+           lvol:
+                vg: webvg
+                lv: weblv3
+                state: absent
+                force: yes
+        -  name: removing the volume groups
+           lvg:
+               vg: webvg
+               state: absent
+        -  name: unpartion the disk
+           parted:
+                  device: /dev/sdc
+                  number: 1
+                  state: absent
+                                

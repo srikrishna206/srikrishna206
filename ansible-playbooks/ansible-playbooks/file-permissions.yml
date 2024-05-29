@@ -1,0 +1,13 @@
+---
+- name: change permissions and ownership, group membership of a directory
+  hosts: sriansible-srv
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: changing /ansible-playbooks permissions
+           file:
+                path: /ansible-playbooks
+                mode: '0777'
+        -  name: changing /ansible-plabooks/* files ownership and group membership
+           shell: chown ansadmin:ansadmin /ansible-playbooks/*
+

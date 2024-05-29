@@ -1,0 +1,7 @@
+---
+- name: ansible_repo1 clone from srikrishna206
+  hosts: sriansible-srv
+  remote_user: ansadmin
+  become: true
+  roles:
+      - gitpushlocal_setup

@@ -1,0 +1,30 @@
+---
+- name : tomcat configuration
+  hosts : sriansible-client1, sriansible-srv, sriansible-client2
+  remote_user : ansadmin
+  become : true
+  tasks :
+   -   name: install tomcat package
+       yum:
+         name: tomcat
+         state: latest
+   -   name: start the tomcat service
+       service:
+         name: tomcat
+         state: started
+         enabled: yes
+       notify: restart httpd service
+   -   name: install httpd package
+       yum:
+        name: httpd
+        state: latest
+   -   name: start the httpd service
+       service:
+         name: httpd
+         state: started
+         enabled: yes
+  handlers :
+   -  name : restart httpd service
+      service:
+        name: httpd
+        state: restarted     

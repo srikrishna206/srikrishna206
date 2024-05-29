@@ -1,0 +1,27 @@
+---
+- name: File System configuration reverse 
+  hosts:  sriansible-srv, sriansible-client1, sriansible-client2
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: unmounting the file system
+           mount:
+                 path: /data
+                 state: absent
+        -  name: removing the logical volume
+           lvol:
+                vg: datavg
+                lv: datalv
+                state: absent
+                force: yes
+        -  name: removing the volume groups
+           lvg:
+               vg: datavg
+               pvs: /dev/sdb1
+               state: absent
+        -  name: Removing the partitions of /dev/sdc disk
+           parted:
+                  device: /dev/sdb
+                  number: 1
+                  state: absent
+                  

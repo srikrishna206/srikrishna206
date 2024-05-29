@@ -1,0 +1,20 @@
+---
+- name : zsh configuration setup
+  hosts : sriansible-client2, sriansible-srv
+  remote_user : ansadmin
+  become : true
+  tasks :
+   -   name: install zsh package
+       yum:
+         name: zsh
+         state: latest
+   -   name: add content to zsh.html file
+       copy:
+         content: "ansible configure has been done"
+         dest: /var/www/html/zsh.html
+   -   name: start the zsh service
+       service:
+         name: zsh
+         state: started
+         enabled: yes
+

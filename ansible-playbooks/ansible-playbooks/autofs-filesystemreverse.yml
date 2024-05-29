@@ -1,0 +1,51 @@
+---
+- name: unmounting the hard and soft mounts
+  hosts: websrv
+  remote_user: ansadmin
+  become: true
+  tasks:
+        -  name: removing entries in  /etc/auto.indirect file
+           lineinfile:
+                      path: /etc/auto.indirect
+                      regexp: 'saiwebdata3'
+                      state: absent
+        -  name: removing entries in /etc/auto.direct file
+           lineinfile:
+                      path: /etc/auto.direct
+                      regexp: 'saiwebdata2'
+                      state: absent
+        -  name: removing the /etc/auto.indirect file
+           file:
+                path: /etc/auto.indirect
+                state: absent
+        -  name: removing the /etc/auto.direct file
+           file:
+                path: /etc/auto.direct
+                state: absent
+        -  name: removing the entries in /etc/auto.master file
+           lineinfile:
+                      path: /etc/auto.master
+                      regexp: 'direct'
+                      state: absent
+        -  name: reloading the autofs service
+           service:
+                   name: autofs
+                   state: reloaded
+        -  name: removing the hard mount
+           mount:
+                 path: /saiwebdata1
+                 state: absent
+        -  name: removing the mount point
+           file:
+                path: /saiwebdata1
+                state: absent
+        -  name: stopping and disabling the autofs service
+           service:
+                   name: autofs
+                   enabled: no
+                   state: stopped
+        -  name: stopping and disabling the nfs service
+           service:
+                   name: nfs
+                   enabled: no
+                   state: stopped

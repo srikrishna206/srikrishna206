@@ -1,0 +1,20 @@
+---
+- name: Update kernel parameter values
+  hosts: sriansible-srv
+  become: yes
+  tasks:
+    - name: Set kernel parameter in /etc/sysctl.conf
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: "{{ item }}"
+        state: present
+      with_items:
+        - "user.max_ipc_namespaces = 6000"
+        - "user.max_mnt_namespaces = 7000"
+        - "user.max_net_namespaces = 9000"
+        - "user.max_pid_namespaces = 8000"
+        - "user.max_user_namespaces = 1"
+        - "user.max_uts_namespaces = 7500"
+        # Add more kernel parameters as needed
+    - name: Apply changes to sysctl
+      command: sysctl -p

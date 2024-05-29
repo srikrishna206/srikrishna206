@@ -1,0 +1,54 @@
+
+---
+ - name: Creation of filesystem /data
+   hosts: sriansible-srv
+   remote_user: ansadmin
+   become: true
+   tasks:
+     -  name: scanning of disk
+        shell: echo "- - -">/sys/class/scsi_host/host0/scan
+        loop:
+           - 1
+           - 2
+           - 3
+     -  name: Creatingpartiion on Specifieddisk
+        parted:
+          device: /dev/sdb
+          number: 1
+          label: gpt
+          flags: [ lvm ]
+          state: present
+     -  name: install lvm2 dependency
+        package:
+             name: lvm2
+             state: present
+     -  name: Creating Logical Volume
+        lvg:
+          vg: datavg
+          pvs: /dev/sdb1
+          state: present
+     -  name: LV creation
+        lvol:
+         vg: datavg
+         lv: datalv
+         size: +100%FREE
+     -  name: CreatingLocal Mountpoint
+        file:
+         path: /data
+         state: directory
+         mode: '2775'
+     -  name: File system Installing
+        filesystem:
+             dev: /dev/datavg/datalv
+             fstype: ext4
+     -  name: Taking backup of fstab file
+        copy:
+          src: /etc/fstab
+          dest: /etc/fstab.bkp
+     -  name: Mounting New Filesystem /data
+        mount:
+          path: /data
+          src: /dev/datavg/datalv
+          opts: defaults
+          fstype: ext4
+          state: mounted

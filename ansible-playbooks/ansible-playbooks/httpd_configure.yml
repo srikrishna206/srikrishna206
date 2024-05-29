@@ -1,0 +1,19 @@
+---
+- name : httpd configuration setup
+  hosts : sriansible-client1
+  remote_user : ansadmin
+  become : true
+  tasks :
+   -   name: install httpd package
+       yum:
+         name: httpd
+         state: latest
+   -   name: add content to index.html file
+       copy:
+         content: "ansible configure has been done"
+         dest: /var/www/html/index.html
+   -   name: start the https service
+       service: 
+         name: httpd
+         state: started
+         enabled: yes

@@ -1,0 +1,11 @@
+---
+ - name: example of varibles(file varibles)
+   hosts: localhost
+   gather_facts: no
+   vars_files:
+    - vars.yml
+   tasks:
+    - name: show varible values
+      debug:
+       msg: "port is {{ http_port }}, username is {{ user }}, path is {{ path }}"
+       
