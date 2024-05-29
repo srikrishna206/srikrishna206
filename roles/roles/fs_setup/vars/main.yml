@@ -1,0 +1,15 @@
+ device_name: /dev/sdb
+ part_num: 1
+ part_label: gpt
+ partition_type: primary
+ partition_start: 0%
+ partition_end: 100%
+ flag_name: [ lvm ]
+ volume_group: webvg
+ physical_volume: /dev/sdb1
+ logical_volume: weblv
+ lv_size: +100%FREE
+ mount_point: /webdata
+ mount_path: /webdata
+ lv_path: /dev/webvg/weblv
+ fs_type: xfs

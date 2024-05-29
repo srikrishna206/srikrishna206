@@ -1,0 +1,12 @@
+
+- name: Ensure Git is installed
+  become: true
+  package:
+        name: git
+        state: present
+
+- name: clone a repo with in new directory
+  git:
+        repo: "https://github.com/{{github_username}}/ansible_repo1.git"
+        dest: /opt/git/ansible_repo1.git
+

@@ -1,0 +1,6 @@
+- name: modifying sysctl with file
+  copy:
+    src: files/{{source_file}}
+    dest: '{{destination_path}}'
+  notify: restart sysctl services
+

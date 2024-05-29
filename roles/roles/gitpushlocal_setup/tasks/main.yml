@@ -1,0 +1,60 @@
+    - name: Ensure the local repository directory exists
+      file:
+        path: "{{ git_repo_dir }}"
+        state: directory
+
+    - name: Initialize a new Git repository
+      command: git init
+      args:
+        chdir: "{{ git_repo_dir }}"
+
+    - name: Set Git user name
+      command: git config user.name "{{ git_user_name }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+
+    - name: Set Git user email
+      command: git config user.email "{{ git_user_email }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+    
+    - name: creating a credential
+      command: git config credential.helper store
+      args:
+        chdir: "{{ git_repo_dir }}" 
+
+    - name: Add remote GitHub repository
+      command: git remote add origin "{{ git_repo_url }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+
+    - name: Copy local file to the repository
+      copy:
+        src: "{{ local_file_path }}"
+        dest: "{{ git_repo_dir }}/{{ local_file_path | basename }}"
+
+    - name: Add file to Git
+      command: git add "{{ local_file_path | basename }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+
+    - name: Commit changes
+      command: git commit -m "{{ git_commit_message }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+
+    - name: changing master to main
+      command: git branch -M main
+      args:
+        chdir: "{{ git_repo_dir }}"
+      
+    - name: git pull from remote
+      command: git pull origin "{{ remote_branch }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+
+    - name: Push changes to the remote GitHub repository
+      command: git push -u origin "{{ remote_branch }}"
+      args:
+        chdir: "{{ git_repo_dir }}"
+

@@ -1,0 +1,11 @@
+- name: Ensure the directory exists
+  file:
+           path: /tmp/sri
+           state: directory
+           mode: '0755'
+- name: archieve the boot directory
+  archive:
+           path: '{{src}}'
+           dest: '{{dest}}{{src}}.tar.gz'
+           format: gz
+           force_archive: true

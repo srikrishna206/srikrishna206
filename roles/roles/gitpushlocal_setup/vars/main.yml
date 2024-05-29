@@ -1,0 +1,9 @@
+local_file_path: "/etc/ansible/roles"
+git_repo_url: "https://github.com/srikrishna206/srikrishna206.git"
+git_password: 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
+git_repo_name: "krishna206"
+git_repo_dir: "/tmp/{{ git_repo_name }}"
+git_commit_message: "Initial commit with local file"
+remote_branch: "main"
+git_user_name: "srikrishna206"
+git_user_email: "parasasrihari@gmail.com"

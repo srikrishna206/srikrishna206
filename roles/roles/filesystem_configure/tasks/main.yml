@@ -1,0 +1,39 @@
+  -  name: scanning of disk
+     shell: echo "- - -">/sys/class/scsi_host/host0/scan
+     loop:
+           - 1
+           - 2
+           - 3
+  -  name: Creatingpartiion on Specifieddisk
+     parted:
+          device: '{{ device_name }}'
+          number: 1
+          label: gpt
+          flags: [ lvm ]
+          state: present
+  -  name: Creating Logical Volume
+     lvg:
+          vg: '{{ vg_name }}'
+          pvs: '{{ device_name }}1'
+          state: present
+  -  name: LV creation
+     lvol:
+          vg: '{{ vg_name }}'
+          lv: '{{ logical_name }}'
+          size: +100%FREE
+  -  name: CreatingLocal Mountpoint
+     file:
+          path: '{{ mount_point }}'
+          state: directory
+          mode: '2775'
+  -  name: File system Installing
+     filesystem:
+          dev: '{{ lv_path }}'
+          fstype: '{{ fs_type }}'
+  -  name: Mounting New Filesystem
+     mount:
+          path: '{{ mount_point }}'
+          src: '{{ lv_path }}'
+          opts: defaults
+          fstype: '{{ fs_type }}'
+          state: mounted
